@@ -1,6 +1,6 @@
 {
   "name": "echodeck-desktop",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "EchoDeck local-first desktop music player for macOS and Windows with local playback, playlists, EQ, visualizers, and source-aware streaming embeds.",
   "main": "src/main.js",
   "author": "EchoDeck",
