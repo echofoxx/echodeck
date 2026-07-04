@@ -56,10 +56,36 @@ Status: built.
 - Privacy notice
 - Automated build/release workflow
 
-## v0.1.1 Windows Desktop Packaging
+## v0.1.2 Windows Desktop Packaging
 
 - Add Windows NSIS installer target.
 - Add Windows portable EXE target.
 - Add Windows build documentation and PowerShell helper scripts.
 - Add GitHub Actions Windows build artifact generation.
 
+
+
+## v0.2.0 Completed — Streaming Sources MVP
+
+- Batch streaming URL import
+- Optional `Artist - Title | URL` intake format
+- YouTube video/Shorts/Music/embed URL parsing
+- YouTube playlist URL parsing and embed playback
+- SoundCloud public URL widget playback
+- Streaming source dashboard counts
+- Open Source / Copy Link controls
+
+## v0.3.0 Candidate — Spotify Groundwork
+
+- Spotify app/client setup documentation
+- OAuth planning screen
+- Playlist metadata import proof of concept
+- Web Playback SDK feasibility assessment
+- Premium/account limitation messaging
+
+## v0.4.0 Candidate — Apple Music Groundwork
+
+- MusicKit setup documentation
+- Developer token notes
+- Authorized Apple Music playback path
+- Catalog/library search planning

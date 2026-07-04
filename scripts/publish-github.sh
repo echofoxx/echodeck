@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO_NAME="${1:-echodeck-macos}"
+REPO_NAME="${1:-echodeck}"
 VISIBILITY="${2:-public}"
-DESCRIPTION="EchoDeck local-first macOS music player with local playback, playlists, EQ, visualizers, and source-aware streaming embeds."
+DESCRIPTION="EchoDeck local-first desktop music player with local playback, playlists, EQ, visualizers, and source-aware streaming embeds."
 
 if ! command -v git >/dev/null 2>&1; then
   echo "git is required. Install Xcode Command Line Tools: xcode-select --install"
@@ -21,7 +21,7 @@ fi
 
 git init
 git add .
-git commit -m "Initial EchoDeck v0.1.0 local macOS app" || true
+git commit -m "Initial EchoDeck desktop app" || true
 git branch -M main
 
 gh repo create "$REPO_NAME" --"$VISIBILITY" --source=. --remote=origin --push --description "$DESCRIPTION"

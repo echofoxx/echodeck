@@ -1,6 +1,6 @@
 # EchoDeck Windows 11 Install and Build Guide
 
-EchoDeck v0.1.1 can run directly on Windows 11 as an Electron desktop app and can also be packaged into a Windows installer or portable EXE.
+EchoDeck v0.1.2 can run directly on Windows 11 as an Electron desktop app and can also be packaged into a Windows installer or portable EXE.
 
 ## Prerequisites
 
@@ -21,12 +21,28 @@ gh --version
 
 If `node` or `npm` is not recognized, install Node.js LTS and reopen PowerShell.
 
+## Recommended folder name
+
+Because the app is now cross-platform, use this folder name going forward:
+
+```powershell
+C:\docker\EchoDeck
+```
+
+To rename your existing folder:
+
+```powershell
+cd C:\docker
+Rename-Item "C:\docker\echodeck-macos-v0.1.0" "EchoDeck"
+cd C:\docker\EchoDeck
+```
+
 ## Run the app locally
 
 From PowerShell:
 
 ```powershell
-cd C:\docker\echodeck-macos-v0.1.0
+cd C:\docker\EchoDeck
 npm install
 npm start
 ```
@@ -36,21 +52,21 @@ The app should open as a local Windows desktop app.
 ## Package a Windows installer and portable app
 
 ```powershell
-cd C:\docker\echodeck-macos-v0.1.0
+cd C:\docker\EchoDeck
 npm run package:win
 ```
 
 Build outputs will appear in:
 
 ```powershell
-C:\docker\echodeck-macos-v0.1.0\release
+C:\docker\EchoDeck\release
 ```
 
 Expected outputs:
 
 ```text
-EchoDeck-0.1.1-Windows-Setup.exe
-EchoDeck-0.1.1-Windows-Portable.exe
+EchoDeck-0.1.2-Windows-Setup.exe
+EchoDeck-0.1.2-Windows-Portable.exe
 ```
 
 ## Build only the installer
@@ -95,12 +111,12 @@ npm run lint:smoke
 npm run package:win
 git status
 git add .
-git commit -m "Add Windows packaging for EchoDeck v0.1.1"
+git commit -m "Normalize EchoDeck cross-platform naming v0.1.2"
 git push
 ```
 
 Then create a release:
 
 ```powershell
-gh release create v0.1.1 --title "EchoDeck v0.1.1" --notes-file RELEASE_NOTES_v0.1.1.md release\*
+gh release create v0.1.2 --title "EchoDeck v0.1.2" --notes-file RELEASE_NOTES_v0.1.2.md release\*
 ```

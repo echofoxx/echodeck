@@ -1,10 +1,10 @@
 param(
-  [string]$RepoName = "echodeck-macos",
+  [string]$RepoName = "echodeck",
   [ValidateSet("public", "private", "internal")]
   [string]$Visibility = "public"
 )
 
-$Description = "EchoDeck local-first macOS music player with local playback, playlists, EQ, visualizers, and source-aware streaming embeds."
+$Description = "EchoDeck local-first desktop music player with local playback, playlists, EQ, visualizers, and source-aware streaming embeds."
 
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
   Write-Error "git is required. Install Git for Windows or Xcode Command Line Tools on macOS."
@@ -24,7 +24,7 @@ try {
 
 git init
 git add .
-git commit -m "Initial EchoDeck v0.1.0 local macOS app"
+git commit -m "Initial EchoDeck desktop app"
 git branch -M main
 
 $visibilityFlag = "--$Visibility"
