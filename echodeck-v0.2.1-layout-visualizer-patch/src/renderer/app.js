@@ -1,7 +1,7 @@
 (() => {
   'use strict';
 
-  const STORAGE_KEY = 'echodeck:v0.2.2';
+  const STORAGE_KEY = 'echodeck:v0.2.1';
   const LEGACY_STORAGE_KEYS = ['echodeck:v0.2.0', 'echodeck:v0.1.0'];
   const isElectron = Boolean(window.echoDeck?.isElectron);
 
@@ -125,7 +125,7 @@
     queue: [],
     queueIndex: -1,
     settings: {
-      schemaVersion: '0.2.2',
+      schemaVersion: '0.2.1',
       theme: 'modern-dark',
       volume: 0.85,
       shuffle: false,
@@ -714,7 +714,6 @@
     els.currentSource.textContent = sourceLabel(track);
     els.currentTitle.textContent = track?.title || 'Drop music files to begin';
     els.currentArtist.textContent = track?.artist || 'EchoDeck local-first player';
-    window.requestAnimationFrame(fitNowPlayingText);
     els.capabilityNote.textContent = track?.sourceType === 'local'
       ? 'EQ, crossfade, and visualizers are active for this local source.'
       : 'This streaming source uses an official embed/widget. EQ, audio analysis, and crossfade are disabled for this source.';
@@ -958,66 +957,6 @@
     return grad;
   }
 
-
-  function updateResponsiveDensity() {
-    const width = window.innerWidth || 1440;
-    const height = window.innerHeight || 900;
-    const root = document.body;
-    let density = 'spacious';
-    if (width < 760 || height < 650) density = 'compact';
-    else if (width < 1180 || height < 760) density = 'dense';
-    else if (width < 1480 || height < 860) density = 'comfortable';
-    root.dataset.density = density;
-    window.requestAnimationFrame(fitNowPlayingText);
-  }
-
-  function fitElementText(element, container, options = {}) {
-    if (!element || !container) return;
-    const min = options.min || 22;
-    const max = options.max || 58;
-    const maxHeightRatio = options.maxHeightRatio || 0.38;
-    const availableWidth = Math.max(150, container.clientWidth - 2);
-    const availableHeight = Math.max(options.minHeight || 72, Math.min(container.clientHeight * maxHeightRatio, options.maxHeight || 170));
-
-    element.style.fontSize = `${max}px`;
-    element.style.lineHeight = options.lineHeight || '0.94';
-    element.style.maxHeight = `${availableHeight}px`;
-
-    let low = min;
-    let high = max;
-    for (let i = 0; i < 9; i += 1) {
-      const mid = (low + high) / 2;
-      element.style.fontSize = `${mid}px`;
-      const fitsWidth = element.scrollWidth <= availableWidth + 1;
-      const fitsHeight = element.scrollHeight <= availableHeight + 1;
-      if (fitsWidth && fitsHeight) low = mid;
-      else high = mid;
-    }
-    element.style.fontSize = `${Math.floor(low)}px`;
-  }
-
-  function fitNowPlayingText() {
-    if (!els.currentTitle || !els.currentArtist) return;
-    const meta = els.currentTitle.closest('.track-meta');
-    if (!meta) return;
-    const width = window.innerWidth || 1440;
-    const density = document.body.dataset.density || 'spacious';
-    const max = density === 'compact' ? 34 : density === 'dense' ? 40 : density === 'comfortable' ? 46 : 58;
-    const min = density === 'compact' ? 18 : 22;
-    fitElementText(els.currentTitle, meta, { min, max, minHeight: 58, maxHeightRatio: 0.35, maxHeight: width < 1480 ? 124 : 162 });
-
-    const artistMax = density === 'compact' ? 15 : density === 'dense' ? 16 : 18;
-    els.currentArtist.style.fontSize = `${artistMax}px`;
-    const note = els.capabilityNote;
-    if (note) note.style.fontSize = density === 'compact' ? '0.78rem' : density === 'dense' ? '0.84rem' : '';
-  }
-
-  let responsiveResizeTimer = null;
-  function scheduleResponsiveFit() {
-    window.clearTimeout(responsiveResizeTimer);
-    responsiveResizeTimer = window.setTimeout(updateResponsiveDensity, 80);
-  }
-
   function render() {
     document.body.dataset.theme = state.settings.theme;
     els.runtimeLabel.textContent = isElectron ? 'Desktop Local App Ready' : 'Browser Preview Mode';
@@ -1037,7 +976,6 @@
     renderVisualButtons();
     renderSourceStats();
     updateNowPlaying(currentTrack());
-    updateResponsiveDensity();
   }
 
   function emptyState() {
@@ -1513,11 +1451,6 @@
       event.preventDefault();
       if (event.dataTransfer?.files?.length) importBrowserFiles(event.dataTransfer.files);
     });
-    window.addEventListener('resize', scheduleResponsiveFit);
-    if (window.ResizeObserver && els.currentTitle) {
-      const meta = els.currentTitle.closest('.track-meta');
-      if (meta) new ResizeObserver(scheduleResponsiveFit).observe(meta);
-    }
 
     if (isElectron) {
       window.echoDeck.onMenuImportFiles(importElectronFiles);
@@ -1538,6 +1471,5 @@
 
   wireEvents();
   render();
-  updateResponsiveDensity();
   startVisualizer();
 })();

@@ -1,4 +1,4 @@
-# EchoDeck v0.2.2 — Adaptive Panel Fit
+# EchoDeck v0.2.1 — Responsive Layout + Full Screen Visuals
 
 EchoDeck is a local-first desktop music player prototype for **Windows 11 and macOS**. It focuses on local music playback, playlist/queue management, EQ, visualizations, crossfade, modern/vintage themes, and source-aware streaming-source organization through official embed/widget paths.
 
@@ -144,11 +144,6 @@ scripts/run-macos.sh        macOS run helper
 scripts/package-macos.sh    macOS packaging helper
 ```
 
-
-
-## v0.2.2 adaptive panel fit update
-
-EchoDeck v0.2.2 focuses on preventing overflow in the Now Playing screen. It adds adaptive panel sizing, responsive typography, dynamic title fitting, and stronger clipping rules so metadata no longer bleeds into the Queue panel when the desktop window is narrow or short.
 
 ## v0.2.1 layout and visualizer update
 

@@ -1,7 +1,7 @@
 {
   "name": "echodeck",
-  "version": "0.2.2",
-  "description": "EchoDeck local-first desktop music player for Windows and macOS with adaptive responsive panels, fit-to-window typography, full-screen visualizers, local playback, playlists, EQ, and source-aware streaming sources.",
+  "version": "0.2.1",
+  "description": "EchoDeck local-first desktop music player for Windows and macOS with responsive layout fixes, full-screen visualizers, local playback, playlists, EQ, and source-aware streaming sources.",
   "main": "src/main.js",
   "author": "EchoDeck",
   "license": "MIT",
