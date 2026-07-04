@@ -1,7 +1,7 @@
 {
-  "name": "echodeck-macos",
-  "version": "0.1.0",
-  "description": "EchoDeck local-first macOS music player with local playback, playlists, EQ, visualizers, and source-aware streaming embeds.",
+  "name": "echodeck-desktop",
+  "version": "0.1.1",
+  "description": "EchoDeck local-first desktop music player for macOS and Windows with local playback, playlists, EQ, visualizers, and source-aware streaming embeds.",
   "main": "src/main.js",
   "author": "EchoDeck",
   "license": "MIT",
@@ -12,7 +12,10 @@
     "dev": "electron . --dev",
     "package:mac": "electron-builder --mac dmg zip",
     "package:dir": "electron-builder --dir",
-    "lint:smoke": "node scripts/smoke-test.js"
+    "lint:smoke": "node scripts/smoke-test.js",
+    "package:win": "electron-builder --win nsis portable",
+    "package:win:installer": "electron-builder --win nsis",
+    "package:win:portable": "electron-builder --win portable"
   },
   "devDependencies": {
     "electron": "^31.7.7",
@@ -43,8 +46,34 @@
     "dmg": {
       "artifactName": "EchoDeck-${version}-macOS.${ext}"
     },
-    "zip": {
-      "artifactName": "EchoDeck-${version}-macOS.${ext}"
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "publisherName": "EchoDeck",
+      "requestedExecutionLevel": "asInvoker"
+    },
+    "nsis": {
+      "artifactName": "EchoDeck-${version}-Windows-Setup.${ext}",
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "EchoDeck"
+    },
+    "portable": {
+      "artifactName": "EchoDeck-${version}-Windows-Portable.${ext}"
     }
   },
   "allowScripts": {

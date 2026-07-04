@@ -55,3 +55,11 @@ Status: built.
 - Error monitoring option
 - Privacy notice
 - Automated build/release workflow
+
+## v0.1.1 Windows Desktop Packaging
+
+- Add Windows NSIS installer target.
+- Add Windows portable EXE target.
+- Add Windows build documentation and PowerShell helper scripts.
+- Add GitHub Actions Windows build artifact generation.
+
