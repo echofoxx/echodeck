@@ -247,3 +247,10 @@ This release fixes the mobile preview experience by hiding the desktop sidebar i
 ## Themes
 
 EchoDeck includes Analog Cream, Studio White, Modern Dark, Modern Light, Vintage Receiver, and Cassette Deck themes.
+
+
+## v0.2.8 Theme Gallery
+
+EchoDeck now includes a Theme Gallery in Settings with preview cards, one-click theme/deck presets, and Demo Mode for screenshots.
+
+Recommended release screenshots are listed in `docs/screenshots/README.md`.

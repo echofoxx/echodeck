@@ -1,8 +1,8 @@
 (() => {
   'use strict';
 
-  const STORAGE_KEY = 'echodeck:v0.2.7';
-  const LEGACY_STORAGE_KEYS = ['echodeck:v0.2.6', 'echodeck:v0.2.5', 'echodeck:v0.2.4', 'echodeck:v0.2.3', 'echodeck:v0.2.2', 'echodeck:v0.2.0', 'echodeck:v0.1.0'];
+  const STORAGE_KEY = 'echodeck:v0.2.8';
+  const LEGACY_STORAGE_KEYS = ['echodeck:v0.2.7', 'echodeck:v0.2.6', 'echodeck:v0.2.5', 'echodeck:v0.2.4', 'echodeck:v0.2.3', 'echodeck:v0.2.2', 'echodeck:v0.2.0', 'echodeck:v0.1.0'];
   const isElectron = Boolean(window.echoDeck?.isElectron);
 
   const $ = (selector) => document.querySelector(selector);
@@ -77,6 +77,10 @@
     visualizerOverlayTitle: $('#visualizerOverlayTitle'),
     visualizerOverlaySubtitle: $('#visualizerOverlaySubtitle'),
     themeOptions: $('#themeOptions'),
+    themeGallery: $('#themeGallery'),
+    themePresetGrid: $('#themePresetGrid'),
+    enableDemoModeBtn: $('#enableDemoModeBtn'),
+    clearDemoModeBtn: $('#clearDemoModeBtn'),
     deckModeStrip: $('.deck-mode-strip'),
     deckModeOptions: $('#deckModeOptions'),
     mobilePreviewBtn: $('#mobilePreviewBtn'),
@@ -117,6 +121,23 @@
     'Lo‑Fi': [4, 2, -2, -1, -3]
   };
 
+  const THEME_GALLERY = [
+    { id: 'analog-cream', name: 'Analog Cream', deck: 'turntable', use: 'Retro mobile / vinyl', colors: ['#f8e8ca', '#d95f13', '#251a12'] },
+    { id: 'studio-white', name: 'Studio White', deck: 'mini', use: 'Clean mobile / LCD', colors: ['#f7f8fa', '#737784', '#e74a46'] },
+    { id: 'modern-dark', name: 'Modern Dark', deck: 'visualizer', use: 'Desktop / visualizer', colors: ['#0b1020', '#8b5cf6', '#06b6d4'] },
+    { id: 'modern-light', name: 'Modern Light', deck: 'classic', use: 'Clean workspace', colors: ['#f8fafc', '#6d28d9', '#0284c7'] },
+    { id: 'vintage', name: 'Vintage Receiver', deck: 'equalizer', use: 'Hi‑fi dashboard', colors: ['#21170d', '#f59e0b', '#14b8a6'] },
+    { id: 'cassette', name: 'Cassette Deck', deck: 'cassette', use: 'Tape / mixtape view', colors: ['#101012', '#ec4899', '#22d3ee'] }
+  ];
+
+  const THEME_PRESETS = [
+    { id: 'analog-turntable', name: 'Analog Turntable', theme: 'analog-cream', deck: 'turntable', visual: 'radial' },
+    { id: 'studio-mini', name: 'Studio Mini LCD', theme: 'studio-white', deck: 'mini', visual: 'wave' },
+    { id: 'dark-visualizer', name: 'Dark Visualizer', theme: 'modern-dark', deck: 'visualizer', visual: 'orbit' },
+    { id: 'vintage-eq', name: 'Vintage EQ', theme: 'vintage', deck: 'equalizer', visual: 'vu' },
+    { id: 'cassette-mixtape', name: 'Cassette Mixtape', theme: 'cassette', deck: 'cassette', visual: 'bars' }
+  ];
+
   const defaultState = () => ({
     library: [],
     playlists: [
@@ -132,7 +153,7 @@
     queue: [],
     queueIndex: -1,
     settings: {
-      schemaVersion: '0.2.7',
+      schemaVersion: '0.2.8',
       theme: 'analog-cream',
       volume: 0.85,
       shuffle: false,
@@ -147,7 +168,8 @@
       lastView: 'now',
       libraryFilter: 'all',
       librarySort: 'recent',
-      resumeOnLaunch: true
+      resumeOnLaunch: true,
+      demoMode: false
     }
   });
 
@@ -1051,6 +1073,8 @@
     renderPlaylists();
     renderEq();
     renderThemeButtons();
+    renderThemeGallery();
+    renderThemePresets();
     renderDeckModeButtons();
     renderVisualButtons();
     renderSourceStats();
@@ -1194,6 +1218,99 @@
       els.presetRow.dataset.built = 'true';
     }
     $$('[data-preset]').forEach(button => button.classList.toggle('active', button.dataset.preset === state.settings.eqPreset));
+  }
+
+
+  function renderThemeGallery() {
+    if (!els.themeGallery || els.themeGallery.dataset.built) return;
+    els.themeGallery.innerHTML = THEME_GALLERY.map(theme => `
+      <article class="theme-preview-card" data-theme-preview="${theme.id}">
+        <div class="theme-preview-window" style="--swatch-a:${theme.colors[0]};--swatch-b:${theme.colors[1]};--swatch-c:${theme.colors[2]}">
+          <div class="preview-lcd"></div>
+          <div class="preview-disc"></div>
+          <div class="preview-bars"><span></span><span></span><span></span><span></span></div>
+        </div>
+        <div>
+          <h4>${escapeHtml(theme.name)}</h4>
+          <p>${escapeHtml(theme.use)}</p>
+          <small>Best deck: ${escapeHtml(theme.deck)}</small>
+        </div>
+        <button class="btn secondary" data-apply-theme-gallery="${theme.id}" data-deck="${theme.deck}">Apply</button>
+      </article>
+    `).join('');
+    els.themeGallery.dataset.built = 'true';
+  }
+
+  function renderThemePresets() {
+    if (!els.themePresetGrid || els.themePresetGrid.dataset.built) return;
+    els.themePresetGrid.innerHTML = THEME_PRESETS.map(preset => `
+      <button class="preset-card" data-theme-preset="${preset.id}">
+        <strong>${escapeHtml(preset.name)}</strong>
+        <span>${escapeHtml(preset.theme)} + ${escapeHtml(preset.deck)}</span>
+      </button>
+    `).join('');
+    els.themePresetGrid.dataset.built = 'true';
+  }
+
+  function applyThemePreset(presetId) {
+    const preset = THEME_PRESETS.find(item => item.id === presetId);
+    if (!preset) return;
+    setState(draft => {
+      draft.settings.theme = preset.theme;
+      draft.settings.deckMode = preset.deck;
+      draft.settings.visualMode = preset.visual;
+      draft.settings.lastView = 'now';
+    });
+    showInfo('Theme preset applied', `${preset.name} is now your EchoDeck look.`);
+  }
+
+  function enableDemoMode() {
+    const now = new Date().toISOString();
+    const demoTracks = [
+      { title: 'Stay ft. Mikky Ekko', artist: 'Rihanna', sourceType: 'local', duration: 239 },
+      { title: 'Dramatic Fade Out', artist: 'EchoDeck Lab', sourceType: 'youtube', sourceUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ', duration: 210 },
+      { title: 'Analog Night Drive', artist: 'Studio White', sourceType: 'soundcloud', sourceUrl: 'https://soundcloud.com/', duration: 188 },
+      { title: 'Vinyl Orbit', artist: 'Demo Crate', sourceType: 'local', duration: 256 },
+      { title: 'Cassette Morning', artist: 'Tape Lab', sourceType: 'youtube-playlist', sourceUrl: 'https://www.youtube.com/playlist?list=PLdemo', duration: 180 }
+    ].map((track, index) => ({
+      id: `demo-${index + 1}`,
+      album: 'EchoDeck Demo',
+      createdAt: now,
+      favorite: index === 0 || index === 3,
+      playCount: 7 - index,
+      ...track
+    }));
+    setState(draft => {
+      const nonDemo = draft.library.filter(track => !String(track.id).startsWith('demo-'));
+      draft.library = [...demoTracks, ...nonDemo];
+      draft.queue = demoTracks.map(track => track.id);
+      draft.queueIndex = 0;
+      draft.playlists = [
+        {
+          id: 'demo-playlist',
+          name: 'Demo Deck Mix',
+          description: 'Seeded tracks for screenshots and QA checks.',
+          trackIds: demoTracks.map(track => track.id),
+          createdAt: now,
+          updatedAt: now
+        },
+        ...draft.playlists.filter(pl => pl.id !== 'demo-playlist')
+      ];
+      draft.settings.demoMode = true;
+      draft.settings.lastView = 'now';
+    });
+    showInfo('Demo mode enabled', 'EchoDeck now has demo tracks, a queue, and a playlist for screenshots.');
+  }
+
+  function clearDemoMode() {
+    setState(draft => {
+      draft.library = draft.library.filter(track => !String(track.id).startsWith('demo-'));
+      draft.queue = draft.queue.filter(id => !String(id).startsWith('demo-'));
+      draft.playlists = draft.playlists.filter(pl => pl.id !== 'demo-playlist');
+      if (draft.queueIndex >= draft.queue.length) draft.queueIndex = draft.queue.length ? 0 : -1;
+      draft.settings.demoMode = false;
+    });
+    showInfo('Demo mode cleared', 'Demo tracks and the demo playlist were removed.');
   }
 
   function renderThemeButtons() {
@@ -1591,6 +1708,24 @@
       if (!button) return;
       setState(draft => { draft.settings.theme = button.dataset.themeChoice; });
     });
+
+    els.themeGallery?.addEventListener('click', event => {
+      const button = event.target.closest('[data-apply-theme-gallery]');
+      if (!button) return;
+      setState(draft => {
+        draft.settings.theme = button.dataset.applyThemeGallery;
+        draft.settings.deckMode = button.dataset.deck || 'classic';
+      });
+    });
+
+    els.themePresetGrid?.addEventListener('click', event => {
+      const button = event.target.closest('[data-theme-preset]');
+      if (!button) return;
+      applyThemePreset(button.dataset.themePreset);
+    });
+
+    els.enableDemoModeBtn?.addEventListener('click', enableDemoMode);
+    els.clearDemoModeBtn?.addEventListener('click', clearDemoMode);
 
     const handleDeckModeClick = event => {
       const button = event.target.closest('[data-deck-mode]');
