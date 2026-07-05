@@ -269,3 +269,42 @@ EchoDeck v0.2.9 adds desktop release polish before the v0.3.0 iOS scaffold:
 - Screenshot placeholder structure
 
 See `docs/DESKTOP_RELEASE_CHECKLIST_v0.2.9.md`.
+
+
+## v0.3.0 iOS Capacitor Scaffold
+
+EchoDeck v0.3.0 adds the first real iOS scaffold while keeping the desktop app intact.
+
+### Desktop still works
+
+```powershell
+npm start
+npm run package:win
+```
+
+### iOS preparation
+
+On Windows, you can check the scaffold:
+
+```powershell
+npm run ios:doctor
+npm run ios:prepare
+```
+
+On macOS with Xcode:
+
+```bash
+npm install
+npm run ios:doctor
+npm run ios:prepare
+npm run ios:add
+npm run ios:sync
+npm run ios:open
+```
+
+See:
+
+- `docs/IOS_SETUP_v0.3.0.md`
+- `docs/IOS_XCODE_BUILD_v0.3.0.md`
+- `docs/IOS_LOCAL_FILE_IMPORT_PLAN_v0.3.0.md`
+- `docs/IOS_APP_STORE_NOTES_v0.3.0.md`

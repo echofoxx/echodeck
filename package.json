@@ -1,7 +1,7 @@
 {
   "name": "echodeck",
-  "version": "0.2.9",
-  "description": "EchoDeck desktop music player with mobile UX, playback persistence, local library tools, visualizers, and streaming-source MVP.",
+  "version": "0.3.0",
+  "description": "EchoDeck cross-platform local-first music player for desktop and iOS scaffold.",
   "main": "src/main.js",
   "author": "EchoDeck",
   "license": "MIT",
@@ -15,11 +15,19 @@
     "lint:smoke": "node scripts/smoke-test.js",
     "package:win": "electron-builder --win nsis portable",
     "package:win:installer": "electron-builder --win nsis",
-    "package:win:portable": "electron-builder --win portable"
+    "package:win:portable": "electron-builder --win portable",
+    "ios:doctor": "node scripts/ios-doctor.js",
+    "ios:prepare": "node scripts/prepare-ios.js",
+    "ios:init": "npx cap init EchoDeck com.echofoxx.echodeck --web-dir=src/renderer",
+    "ios:add": "npx cap add ios",
+    "ios:sync": "npx cap sync ios",
+    "ios:open": "npx cap open ios",
+    "mobile:preview": "npm start"
   },
   "devDependencies": {
     "electron": "^31.7.7",
-    "electron-builder": "^24.13.3"
+    "electron-builder": "^24.13.3",
+    "@capacitor/cli": "^6.1.2"
   },
   "build": {
     "appId": "com.echofoxx.echodeck",
@@ -75,5 +83,8 @@
     "portable": {
       "artifactName": "EchoDeck-${version}-Windows-Portable.${ext}"
     }
+  },
+  "dependencies": {
+    "@capacitor/core": "^6.1.2"
   }
 }

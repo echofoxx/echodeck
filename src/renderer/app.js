@@ -1,8 +1,8 @@
 (() => {
   'use strict';
 
-  const STORAGE_KEY = 'echodeck:v0.2.9';
-  const LEGACY_STORAGE_KEYS = ['echodeck:v0.2.8', 'echodeck:v0.2.7', 'echodeck:v0.2.6', 'echodeck:v0.2.5', 'echodeck:v0.2.4', 'echodeck:v0.2.3', 'echodeck:v0.2.2', 'echodeck:v0.2.0', 'echodeck:v0.1.0'];
+  const STORAGE_KEY = 'echodeck:v0.3.0';
+  const LEGACY_STORAGE_KEYS = ['echodeck:v0.2.9', 'echodeck:v0.2.8', 'echodeck:v0.2.7', 'echodeck:v0.2.6', 'echodeck:v0.2.5', 'echodeck:v0.2.4', 'echodeck:v0.2.3', 'echodeck:v0.2.2', 'echodeck:v0.2.0', 'echodeck:v0.1.0'];
   const isElectron = Boolean(window.echoDeck?.isElectron);
 
   const $ = (selector) => document.querySelector(selector);
@@ -156,7 +156,7 @@
     queue: [],
     queueIndex: -1,
     settings: {
-      schemaVersion: '0.2.9',
+      schemaVersion: '0.3.0',
       theme: 'analog-cream',
       volume: 0.85,
       shuffle: false,
