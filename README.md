@@ -308,3 +308,8 @@ See:
 - `docs/IOS_XCODE_BUILD_v0.3.0.md`
 - `docs/IOS_LOCAL_FILE_IMPORT_PLAN_v0.3.0.md`
 - `docs/IOS_APP_STORE_NOTES_v0.3.0.md`
+
+
+## v0.3.1 Version Label Fix
+
+EchoDeck v0.3.1 fixes the stale Now Playing header label that could still show an older release name such as `v0.2.6 Mobile UX`.

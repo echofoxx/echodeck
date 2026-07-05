@@ -1,6 +1,6 @@
 {
   "name": "echodeck",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "EchoDeck cross-platform local-first music player for desktop and iOS scaffold.",
   "main": "src/main.js",
   "author": "EchoDeck",

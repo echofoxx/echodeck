@@ -1,15 +1,17 @@
 (() => {
   'use strict';
 
-  const STORAGE_KEY = 'echodeck:v0.3.0';
-  const LEGACY_STORAGE_KEYS = ['echodeck:v0.2.9', 'echodeck:v0.2.8', 'echodeck:v0.2.7', 'echodeck:v0.2.6', 'echodeck:v0.2.5', 'echodeck:v0.2.4', 'echodeck:v0.2.3', 'echodeck:v0.2.2', 'echodeck:v0.2.0', 'echodeck:v0.1.0'];
+  const STORAGE_KEY = 'echodeck:v0.3.1';
+  const LEGACY_STORAGE_KEYS = ['echodeck:v0.3.0', 'echodeck:v0.2.9', 'echodeck:v0.2.8', 'echodeck:v0.2.7', 'echodeck:v0.2.6', 'echodeck:v0.2.5', 'echodeck:v0.2.4', 'echodeck:v0.2.3', 'echodeck:v0.2.2', 'echodeck:v0.2.0', 'echodeck:v0.1.0'];
   const isElectron = Boolean(window.echoDeck?.isElectron);
+  const APP_VERSION = '0.3.1';
 
   const $ = (selector) => document.querySelector(selector);
   const $$ = (selector) => Array.from(document.querySelectorAll(selector));
 
   const els = {
     runtimeLabel: $('#runtimeLabel'),
+    appVersionLabel: $('#appVersionLabel'),
     libraryCount: $('#libraryCount'),
     playlistCount: $('#playlistCount'),
     queueCount: $('#queueCount'),
@@ -156,7 +158,7 @@
     queue: [],
     queueIndex: -1,
     settings: {
-      schemaVersion: '0.3.0',
+      schemaVersion: '0.3.1',
       theme: 'analog-cream',
       volume: 0.85,
       shuffle: false,
@@ -1164,6 +1166,7 @@
     document.body.dataset.deckMode = state.settings.deckMode || 'classic';
     document.body.dataset.mobilePreview = state.settings.mobilePreview ? 'true' : 'false';
     els.runtimeLabel.textContent = isElectron ? 'Desktop Local App Ready' : 'Browser Preview Mode';
+    if (els.appVersionLabel) els.appVersionLabel.textContent = `v${APP_VERSION} iOS Scaffold`;
     els.libraryCount.textContent = state.library.length;
     els.playlistCount.textContent = state.playlists.length;
     els.queueCount.textContent = state.queue.length;
