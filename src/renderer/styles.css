@@ -1664,3 +1664,56 @@ body[data-theme="analog-cream"] .preset-card {
   background: rgba(255, 245, 222, 0.68);
   border-color: rgba(82, 52, 21, 0.16);
 }
+
+
+/* v0.2.9 Desktop Stabilization + Release Polish */
+.recently-played-list {
+  display: grid;
+  gap: 10px;
+}
+.recent-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--card-strong) 76%, transparent);
+  border-radius: 16px;
+  padding: 12px;
+  min-width: 0;
+}
+.recent-item div {
+  min-width: 0;
+  display: grid;
+  gap: 3px;
+}
+.recent-item strong,
+.recent-item span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.recent-item span {
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+.empty-state.compact {
+  padding: 14px;
+}
+.empty-state.compact h3 {
+  font-size: 1rem;
+}
+body[data-mobile-preview="true"] .recent-item {
+  align-items: stretch;
+  flex-direction: column;
+}
+body[data-mobile-preview="true"] .recent-item .btn {
+  width: 100%;
+}
+.release-polish-note {
+  border: 1px dashed var(--border);
+  border-radius: 18px;
+  padding: 12px;
+  color: var(--muted);
+  background: color-mix(in srgb, var(--card) 72%, transparent);
+}

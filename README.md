@@ -254,3 +254,18 @@ EchoDeck includes Analog Cream, Studio White, Modern Dark, Modern Light, Vintage
 EchoDeck now includes a Theme Gallery in Settings with preview cards, one-click theme/deck presets, and Demo Mode for screenshots.
 
 Recommended release screenshots are listed in `docs/screenshots/README.md`.
+
+
+## v0.2.9 Desktop Stabilization
+
+EchoDeck v0.2.9 adds desktop release polish before the v0.3.0 iOS scaffold:
+
+- Duplicate scan
+- Clear library confirmation
+- Recently played persistence panel
+- Release checklist
+- Windows troubleshooting
+- iOS build requirement docs
+- Screenshot placeholder structure
+
+See `docs/DESKTOP_RELEASE_CHECKLIST_v0.2.9.md`.

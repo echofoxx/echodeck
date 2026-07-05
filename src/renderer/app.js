@@ -1,8 +1,8 @@
 (() => {
   'use strict';
 
-  const STORAGE_KEY = 'echodeck:v0.2.8';
-  const LEGACY_STORAGE_KEYS = ['echodeck:v0.2.7', 'echodeck:v0.2.6', 'echodeck:v0.2.5', 'echodeck:v0.2.4', 'echodeck:v0.2.3', 'echodeck:v0.2.2', 'echodeck:v0.2.0', 'echodeck:v0.1.0'];
+  const STORAGE_KEY = 'echodeck:v0.2.9';
+  const LEGACY_STORAGE_KEYS = ['echodeck:v0.2.8', 'echodeck:v0.2.7', 'echodeck:v0.2.6', 'echodeck:v0.2.5', 'echodeck:v0.2.4', 'echodeck:v0.2.3', 'echodeck:v0.2.2', 'echodeck:v0.2.0', 'echodeck:v0.1.0'];
   const isElectron = Boolean(window.echoDeck?.isElectron);
 
   const $ = (selector) => document.querySelector(selector);
@@ -86,6 +86,9 @@
     mobilePreviewBtn: $('#mobilePreviewBtn'),
     exportSettingsBtn: $('#exportSettingsBtn'),
     resetAppBtn: $('#resetAppBtn'),
+    clearLibraryBtn: $('#clearLibraryBtn'),
+    duplicateScanBtn: $('#duplicateScanBtn'),
+    recentlyPlayedList: $('#recentlyPlayedList'),
     streamDialog: $('#streamDialog'),
     genericStreamUrl: $('#genericStreamUrl'),
     streamTitle: $('#streamTitle'),
@@ -153,7 +156,7 @@
     queue: [],
     queueIndex: -1,
     settings: {
-      schemaVersion: '0.2.8',
+      schemaVersion: '0.2.9',
       theme: 'analog-cream',
       volume: 0.85,
       shuffle: false,
@@ -169,7 +172,8 @@
       libraryFilter: 'all',
       librarySort: 'recent',
       resumeOnLaunch: true,
-      demoMode: false
+      demoMode: false,
+      recentlyPlayed: []
     }
   });
 
@@ -581,6 +585,7 @@
       activeAudio.pause();
       standbyAudio.pause();
       isPlaying = true;
+    recordRecentlyPlayed(currentTrack());
       els.embedTitle.textContent = track.title;
       els.embedHost.innerHTML = buildEmbed(track);
       els.embedPanel.classList.remove('hidden');
@@ -1053,6 +1058,107 @@
     responsiveResizeTimer = window.setTimeout(updateResponsiveDensity, 80);
   }
 
+
+  function normalizeUrl(value) {
+    return String(value || '').trim().replace(/\/+$/, '').toLowerCase();
+  }
+
+  function findDuplicateTrack(candidate) {
+    if (!candidate) return null;
+    const candidateUrl = normalizeUrl(candidate.sourceUrl);
+    const candidateName = `${candidate.title || ''}|${candidate.artist || ''}|${candidate.sourceType || ''}`.toLowerCase();
+    return state.library.find(track => {
+      const sameUrl = candidateUrl && normalizeUrl(track.sourceUrl) === candidateUrl;
+      const sameLocalName = candidate.sourceType === 'local'
+        && track.sourceType === 'local'
+        && String(track.title || '').toLowerCase() === String(candidate.title || '').toLowerCase()
+        && String(track.artist || '').toLowerCase() === String(candidate.artist || '').toLowerCase();
+      const sameGenerated = `${track.title || ''}|${track.artist || ''}|${track.sourceType || ''}`.toLowerCase() === candidateName;
+      return sameUrl || sameLocalName || sameGenerated;
+    }) || null;
+  }
+
+  function addTrackIfUnique(track, options = {}) {
+    const existing = findDuplicateTrack(track);
+    if (existing && !options.allowDuplicate) {
+      return { added: false, existing };
+    }
+    state.library.unshift(track);
+    return { added: true, track };
+  }
+
+  function recordRecentlyPlayed(track) {
+    if (!track) return;
+    const entry = {
+      id: track.id,
+      title: track.title,
+      artist: track.artist || 'Unknown Artist',
+      sourceType: track.sourceType || 'unknown',
+      playedAt: new Date().toISOString()
+    };
+    const next = [entry, ...(state.settings.recentlyPlayed || []).filter(item => item.id !== track.id)].slice(0, 12);
+    state.settings.recentlyPlayed = next;
+    track.lastPlayedAt = entry.playedAt;
+    track.playCount = (track.playCount || 0) + 1;
+    saveState();
+    renderRecentlyPlayed();
+  }
+
+  function renderRecentlyPlayed() {
+    if (!els.recentlyPlayedList) return;
+    const list = state.settings.recentlyPlayed || [];
+    if (!list.length) {
+      els.recentlyPlayedList.innerHTML = '<div class="empty-state compact"><div>◷</div><h3>No recently played tracks yet</h3><p>Play a track to populate this release polish panel.</p></div>';
+      return;
+    }
+    els.recentlyPlayedList.innerHTML = list.map(item => `
+      <div class="recent-item">
+        <div>
+          <strong>${escapeHtml(item.title)}</strong>
+          <span>${escapeHtml(item.artist)} · ${escapeHtml(item.sourceType)}</span>
+        </div>
+        <button class="btn secondary" data-recent-play="${escapeHtml(item.id)}">Play</button>
+      </div>
+    `).join('');
+  }
+
+  function scanDuplicates() {
+    const seen = new Map();
+    const duplicates = [];
+    for (const track of state.library) {
+      const key = track.sourceUrl
+        ? `url:${normalizeUrl(track.sourceUrl)}`
+        : `meta:${String(track.sourceType || '').toLowerCase()}|${String(track.title || '').toLowerCase()}|${String(track.artist || '').toLowerCase()}`;
+      if (seen.has(key)) duplicates.push(track);
+      else seen.set(key, track);
+    }
+    if (!duplicates.length) {
+      showInfo('Duplicate scan complete', 'No duplicate local names or streaming URLs were found.');
+      return;
+    }
+    const remove = confirm(`Found ${duplicates.length} duplicate track${duplicates.length === 1 ? '' : 's'}. Remove duplicate copies and keep the first match?`);
+    if (!remove) return;
+    setState(draft => {
+      const removeIds = new Set(duplicates.map(track => track.id));
+      draft.library = draft.library.filter(track => !removeIds.has(track.id));
+      draft.queue = draft.queue.filter(id => !removeIds.has(id));
+      draft.playlists = draft.playlists.map(pl => ({ ...pl, trackIds: (pl.trackIds || []).filter(id => !removeIds.has(id)) }));
+    });
+  }
+
+  function clearLibraryWithConfirm() {
+    const ok = confirm('Clear the entire EchoDeck library, queue, playlists, and recently played history? This cannot be undone unless you exported a backup.');
+    if (!ok) return;
+    setState(draft => {
+      draft.library = [];
+      draft.queue = [];
+      draft.queueIndex = -1;
+      draft.playlists = [];
+      draft.settings.recentlyPlayed = [];
+    });
+    showInfo('Library cleared', 'EchoDeck local library data was cleared.');
+  }
+
   function render() {
     document.body.dataset.theme = state.settings.theme;
     document.body.dataset.deckMode = state.settings.deckMode || 'classic';
@@ -1078,6 +1184,7 @@
     renderDeckModeButtons();
     renderVisualButtons();
     renderSourceStats();
+    renderRecentlyPlayed();
     updateNowPlaying(currentTrack());
     updateResponsiveDensity();
   }
@@ -1746,6 +1853,24 @@
     els.spotifyPlanBtn.addEventListener('click', () => showInfo('Spotify Integration Plan', 'Planned for v0.3.x: Spotify OAuth, catalog search, playlist import, and Web Playback SDK playback where Spotify allows it. Some users may need Spotify Premium. EchoDeck will not intercept, modify, cache, or re-stream Spotify audio.'));
     els.applePlanBtn.addEventListener('click', () => showInfo('Apple Music Integration Plan', 'Planned for v0.4.x: MusicKit authorization, Apple Music catalog search, user library access, and MusicKit playback. EchoDeck will use official Apple Music APIs and authorized playback only.'));
     els.exportSettingsBtn.addEventListener('click', () => downloadJson(`echodeck-backup-${new Date().toISOString().slice(0,10)}.json`, state));
+    els.clearLibraryBtn?.addEventListener('click', clearLibraryWithConfirm);
+    els.duplicateScanBtn?.addEventListener('click', scanDuplicates);
+    els.recentlyPlayedList?.addEventListener('click', event => {
+      const button = event.target.closest('[data-recent-play]');
+      if (!button) return;
+      const id = button.dataset.recentPlay;
+      const index = state.queue.indexOf(id);
+      if (index >= 0) {
+        state.queueIndex = index;
+      } else if (getTrack(id)) {
+        state.queue.unshift(id);
+        state.queueIndex = 0;
+      }
+      saveState();
+      loadCurrentTrack(true);
+      render();
+    });
+
     els.resetAppBtn.addEventListener('click', () => {
       if (!confirm('Reset EchoDeck local data? This clears saved library metadata, playlists, queue, and settings.')) return;
       localStorage.removeItem(STORAGE_KEY);
