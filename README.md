@@ -242,3 +242,8 @@ Shortcuts: `D` cycles deck modes, `M` toggles Mobile Preview, and `F` opens the 
 ## v0.2.6 Mobile UX + Playback Persistence
 
 This release fixes the mobile preview experience by hiding the desktop sidebar in Mobile Preview, centering the app in a phone-sized canvas, preventing horizontal bleed, and tightening the deck mode strip, Now Playing, Queue, and visualizer sizing for mobile/iOS-style layouts.
+
+
+## Themes
+
+EchoDeck includes Analog Cream, Studio White, Modern Dark, Modern Light, Vintage Receiver, and Cassette Deck themes.

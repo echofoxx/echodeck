@@ -1,6 +1,6 @@
 {
   "name": "echodeck",
-  "version": "0.2.6",
+  "version": "0.2.7",
   "description": "EchoDeck desktop music player with mobile UX, playback persistence, local library tools, visualizers, and streaming-source MVP.",
   "main": "src/main.js",
   "author": "EchoDeck",
