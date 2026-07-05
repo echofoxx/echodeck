@@ -1,7 +1,7 @@
 {
   "name": "echodeck",
-  "version": "0.2.5",
-  "description": "EchoDeck local-first desktop music player with fixed mobile preview layout, deck modes, Analog Cream retro Hi-Fi theme, visualizers, local playback, playlists, EQ, and source-aware streaming sources.",
+  "version": "0.2.6",
+  "description": "EchoDeck desktop music player with mobile UX, playback persistence, local library tools, visualizers, and streaming-source MVP.",
   "main": "src/main.js",
   "author": "EchoDeck",
   "license": "MIT",

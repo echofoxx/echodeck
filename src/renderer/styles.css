@@ -1244,3 +1244,129 @@ body[data-mobile-preview="true"][data-deck-mode="mini"] .album-stage {
     min-height: 240px;
   }
 }
+
+
+/* v0.2.6 Mobile UX + Playback Persistence */
+.queue-header-actions { display: inline-flex; gap: 6px; align-items: center; }
+.library-tools select,
+.library-tools button {
+  min-height: 42px;
+}
+.library-tools select {
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--panel-solid) 82%, transparent);
+  color: var(--text);
+  border-radius: 14px;
+  padding: 10px 12px;
+  outline: none;
+}
+.library-summary {
+  color: var(--muted);
+  font-size: 0.86rem;
+  margin-top: 10px;
+}
+.mobile-tabbar {
+  display: none;
+  border: 1px solid var(--border);
+  background: color-mix(in srgb, var(--card-strong) 86%, transparent);
+  border-radius: 22px;
+  padding: 6px;
+  gap: 4px;
+  box-shadow: var(--shadow);
+  margin: 0 0 12px;
+}
+.mobile-tabbar button {
+  min-width: 0;
+  border: 0;
+  border-radius: 16px;
+  background: transparent;
+  color: var(--muted);
+  padding: 9px 6px;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  font-weight: 900;
+}
+.mobile-tabbar button span { font-size: 1.05rem; line-height: 1; }
+.mobile-tabbar button em { font-style: normal; font-size: 0.62rem; }
+.mobile-tabbar button.active {
+  color: var(--text);
+  background: color-mix(in srgb, var(--primary) 20%, transparent);
+}
+.mobile-ux-card p { color: var(--muted); line-height: 1.55; }
+body[data-mobile-preview="true"] .mobile-tabbar {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  position: sticky;
+  bottom: 8px;
+  z-index: 40;
+}
+body[data-mobile-preview="true"] .deck-mode-strip {
+  order: 5;
+}
+body[data-mobile-preview="true"] .main-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+body[data-mobile-preview="true"] .view.active {
+  padding-bottom: 8px;
+}
+body[data-mobile-preview="true"] .track-row {
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 10px;
+}
+body[data-mobile-preview="true"] .track-row .source-badge,
+body[data-mobile-preview="true"] .track-row .row-actions {
+  grid-column: 2;
+  justify-content: flex-start;
+}
+body[data-mobile-preview="true"] .row-actions,
+body[data-mobile-preview="true"] .small-actions {
+  flex-wrap: wrap;
+}
+body[data-mobile-preview="true"] .row-actions button,
+body[data-mobile-preview="true"] .small-actions button {
+  min-height: 34px;
+  padding: 7px 9px;
+}
+body[data-mobile-preview="true"] .library-tools {
+  display: grid;
+  grid-template-columns: 1fr;
+}
+body[data-mobile-preview="true"] .library-tools select,
+body[data-mobile-preview="true"] .library-tools .btn,
+body[data-mobile-preview="true"] .search-box input {
+  width: 100%;
+  min-width: 0;
+}
+body[data-mobile-preview="true"] .queue-item {
+  grid-template-columns: minmax(0, 1fr);
+}
+body[data-mobile-preview="true"] .playlist-grid {
+  grid-template-columns: 1fr;
+}
+body[data-mobile-preview="true"] .settings-grid,
+body[data-mobile-preview="true"] .audio-grid,
+body[data-mobile-preview="true"] .sources-grid {
+  gap: 10px;
+}
+body[data-mobile-preview="true"] .theme-options,
+body[data-mobile-preview="true"] .deck-mode-options {
+  grid-template-columns: 1fr;
+}
+body[data-mobile-preview="true"] .source-stats {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+body[data-mobile-preview="true"] .topbar {
+  padding-bottom: 4px;
+}
+@media (max-width: 760px) {
+  .mobile-tabbar {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    position: sticky;
+    bottom: 8px;
+    z-index: 40;
+  }
+}

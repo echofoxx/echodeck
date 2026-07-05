@@ -1,8 +1,8 @@
 (() => {
   'use strict';
 
-  const STORAGE_KEY = 'echodeck:v0.2.5';
-  const LEGACY_STORAGE_KEYS = ['echodeck:v0.2.4', 'echodeck:v0.2.3', 'echodeck:v0.2.2', 'echodeck:v0.2.0', 'echodeck:v0.1.0'];
+  const STORAGE_KEY = 'echodeck:v0.2.6';
+  const LEGACY_STORAGE_KEYS = ['echodeck:v0.2.5', 'echodeck:v0.2.4', 'echodeck:v0.2.3', 'echodeck:v0.2.2', 'echodeck:v0.2.0', 'echodeck:v0.1.0'];
   const isElectron = Boolean(window.echoDeck?.isElectron);
 
   const $ = (selector) => document.querySelector(selector);
@@ -38,11 +38,15 @@
     capabilityNote: $('#capabilityNote'),
     queueList: $('#queueList'),
     clearQueueBtn: $('#clearQueueBtn'),
+    saveQueueBtn: $('#saveQueueBtn'),
     embedPanel: $('#embedPanel'),
     embedTitle: $('#embedTitle'),
     embedHost: $('#embedHost'),
     closeEmbedBtn: $('#closeEmbedBtn'),
     librarySearch: $('#librarySearch'),
+    librarySourceFilter: $('#librarySourceFilter'),
+    librarySort: $('#librarySort'),
+    librarySummary: $('#librarySummary'),
     browserFileBtn: $('#browserFileBtn'),
     browserFileInput: $('#browserFileInput'),
     exportLibraryBtn: $('#exportLibraryBtn'),
@@ -128,7 +132,7 @@
     queue: [],
     queueIndex: -1,
     settings: {
-      schemaVersion: '0.2.4',
+      schemaVersion: '0.2.6',
       theme: 'analog-cream',
       volume: 0.85,
       shuffle: false,
@@ -140,7 +144,10 @@
       eqPreset: 'Flat',
       deckMode: 'classic',
       mobilePreview: false,
-      lastView: 'now'
+      lastView: 'now',
+      libraryFilter: 'all',
+      librarySort: 'recent',
+      resumeOnLaunch: true
     }
   });
 
@@ -1037,6 +1044,8 @@
     els.crossfadeToggle.checked = state.settings.crossfadeEnabled;
     els.crossfadeRange.value = state.settings.crossfadeSeconds;
     els.crossfadeLabel.textContent = `${state.settings.crossfadeSeconds}s`;
+    if (els.librarySourceFilter) els.librarySourceFilter.value = state.settings.libraryFilter || 'all';
+    if (els.librarySort) els.librarySort.value = state.settings.librarySort || 'recent';
     renderLibrary();
     renderQueue();
     renderPlaylists();
@@ -1053,16 +1062,37 @@
     return els.emptyTemplate.content.cloneNode(true);
   }
 
+  function sortTracks(tracks, mode) {
+    const list = [...tracks];
+    const byText = key => list.sort((a, b) => String(a[key] || '').localeCompare(String(b[key] || '')));
+    if (mode === 'title') return byText('title');
+    if (mode === 'artist') return byText('artist');
+    if (mode === 'source') return list.sort((a, b) => String(a.sourceType || '').localeCompare(String(b.sourceType || '')) || String(a.title || '').localeCompare(String(b.title || '')));
+    if (mode === 'plays') return list.sort((a, b) => (b.playCount || 0) - (a.playCount || 0));
+    return list.sort((a, b) => String(b.createdAt || '').localeCompare(String(a.createdAt || '')));
+  }
+
   function renderLibrary() {
     const query = els.librarySearch.value.trim().toLowerCase();
-    const tracks = state.library.filter(track => {
-      if (!query) return true;
-      return [track.title, track.artist, track.album, track.sourceType, ...(track.tags || [])]
+    const sourceFilter = els.librarySourceFilter?.value || state.settings.libraryFilter || 'all';
+    const sortMode = els.librarySort?.value || state.settings.librarySort || 'recent';
+    let tracks = state.library.filter(track => {
+      const matchesQuery = !query || [track.title, track.artist, track.album, track.sourceType, ...(track.tags || [])]
         .filter(Boolean)
         .join(' ')
         .toLowerCase()
         .includes(query);
+      const source = track.sourceType || 'unknown';
+      const matchesSource = sourceFilter === 'all'
+        || (sourceFilter === 'youtube' && (source === 'youtube' || source === 'youtube-playlist'))
+        || (sourceFilter === 'favorites' && track.favorite)
+        || source === sourceFilter;
+      return matchesQuery && matchesSource;
     });
+    tracks = sortTracks(tracks, sortMode);
+    if (els.librarySummary) {
+      els.librarySummary.textContent = `${tracks.length} of ${state.library.length} track${state.library.length === 1 ? '' : 's'} · Filter: ${sourceFilter} · Sort: ${sortMode}`;
+    }
     els.libraryTable.innerHTML = '';
     if (!tracks.length) {
       els.libraryTable.appendChild(emptyState());
@@ -1109,9 +1139,10 @@
           <div class="item-sub">${escapeHtml(track.artist || '')} · ${escapeHtml(sourceLabel(track))}</div>
         </div>
         <div class="small-actions">
-          <button data-queue-action="play" data-index="${index}">▶</button>
-          ${track.sourceUrl ? `<button data-queue-action="open" data-index="${index}">↗</button>` : ''}
-          <button data-queue-action="up" data-index="${index}">↑</button>
+          <button data-queue-action="play" data-index="${index}" title="Play now">▶</button>
+          <button data-queue-action="next" data-index="${index}" title="Play next">+1</button>
+          ${track.sourceUrl ? `<button data-queue-action="open" data-index="${index}" title="Open source">↗</button>` : ''}
+          <button data-queue-action="up" data-index="${index}" title="Move up">↑</button>
           <button data-queue-action="down" data-index="${index}">↓</button>
           <button data-queue-action="remove" data-index="${index}">×</button>
         </div>
@@ -1238,6 +1269,23 @@
     }
   }
 
+  function saveQueueAsPlaylist() {
+    if (!state.queue.length) return toast('Queue is empty. Add tracks before saving a playlist.');
+    const name = prompt('Save queue as playlist', `Queue ${new Date().toLocaleDateString()}`);
+    if (!name) return;
+    setState(draft => {
+      draft.playlists.push({
+        id: crypto.randomUUID(),
+        name,
+        description: `Saved from queue · ${draft.queue.length} item${draft.queue.length === 1 ? '' : 's'}`,
+        trackIds: [...draft.queue],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      });
+    });
+    toast('Queue saved as playlist');
+  }
+
   function downloadJson(filename, payload) {
     const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -1310,15 +1358,23 @@
     els.infoDialog.showModal();
   }
 
-  function setView(viewName) {
+  function setView(viewName, persist = true) {
+    const allowed = new Set(['now', 'library', 'playlists', 'sources', 'audio', 'settings']);
+    if (!allowed.has(viewName)) viewName = 'now';
     $$('.nav-item').forEach(btn => btn.classList.toggle('active', btn.dataset.view === viewName));
+    $$('.mobile-tabbar button').forEach(btn => btn.classList.toggle('active', btn.dataset.view === viewName));
     $$('.view').forEach(view => view.classList.toggle('active', view.id === `view-${viewName}`));
     const titles = { now: 'Now Playing', library: 'Library', playlists: 'Playlists', sources: 'Streaming Sources', audio: 'EQ / Visuals', settings: 'Settings' };
     els.viewTitle.textContent = titles[viewName] || 'EchoDeck';
+    if (persist) {
+      state.settings.lastView = viewName;
+      saveState();
+    }
   }
 
   function wireEvents() {
     $$('.nav-item').forEach(button => button.addEventListener('click', () => setView(button.dataset.view)));
+    $$('.mobile-tabbar button').forEach(button => button.addEventListener('click', () => setView(button.dataset.view)));
     els.importFilesBtn.addEventListener('click', importElectronFiles);
     els.importFolderBtn.addEventListener('click', importElectronFolder);
     els.browserFileBtn.addEventListener('click', () => els.browserFileInput.click());
@@ -1355,7 +1411,13 @@
         if (target) target.favorite = !target.favorite;
       });
     });
-    els.clearQueueBtn.addEventListener('click', () => setState(draft => { draft.queue = []; draft.queueIndex = -1; }));
+    if (els.saveQueueBtn) els.saveQueueBtn.addEventListener('click', saveQueueAsPlaylist);
+    els.clearQueueBtn.addEventListener('click', () => {
+      if (!state.queue.length) return;
+      if (!confirm('Clear the current queue?')) return;
+      setState(draft => { draft.queue = []; draft.queueIndex = -1; });
+      pauseCurrent();
+    });
     els.openCurrentSourceBtn.addEventListener('click', () => openTrackSource(currentTrack()));
     els.copyCurrentSourceBtn.addEventListener('click', () => copyTrackSource(currentTrack()));
     els.closeEmbedBtn.addEventListener('click', () => {
@@ -1412,6 +1474,17 @@
       const index = Number(button.dataset.index);
       const action = button.dataset.queueAction;
       if (action === 'open') return openTrackSource(getTrack(state.queue[index]));
+      if (action === 'next') {
+        const id = state.queue[index];
+        if (!id) return;
+        setState(draft => {
+          draft.queue.splice(index, 1);
+          const insertAt = Math.min(draft.queue.length, Math.max(0, draft.queueIndex + 1));
+          draft.queue.splice(insertAt, 0, id);
+          if (draft.queueIndex >= index) draft.queueIndex = Math.max(0, draft.queueIndex - 1);
+        });
+        return toast('Moved to play next');
+      }
       setState(draft => {
         if (action === 'play') draft.queueIndex = index;
         if (action === 'remove') {
@@ -1431,6 +1504,8 @@
     });
 
     els.librarySearch.addEventListener('input', renderLibrary);
+    if (els.librarySourceFilter) els.librarySourceFilter.addEventListener('change', event => setState(draft => { draft.settings.libraryFilter = event.target.value; }));
+    if (els.librarySort) els.librarySort.addEventListener('change', event => setState(draft => { draft.settings.librarySort = event.target.value; }));
     els.exportLibraryBtn.addEventListener('click', () => downloadJson(`echodeck-library-${new Date().toISOString().slice(0,10)}.json`, { library: state.library, playlists: state.playlists }));
     els.importLibraryBtn.addEventListener('click', () => els.importLibraryInput.click());
     els.importLibraryInput.addEventListener('change', async event => {
@@ -1586,6 +1661,8 @@
 
   wireEvents();
   render();
+  setView(state.settings.lastView || 'now', false);
+  updateNowPlaying(currentTrack());
   updateResponsiveDensity();
   startVisualizer();
 })();

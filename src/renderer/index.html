@@ -40,7 +40,7 @@
     <main class="main-panel">
       <header class="topbar">
         <div>
-          <p class="eyebrow">v0.2.5 Mobile Fit</p>
+          <p class="eyebrow">v0.2.6 Mobile UX</p>
           <h2 id="viewTitle">Now Playing</h2>
         </div>
         <div class="top-actions">
@@ -60,6 +60,15 @@
         <button data-deck-mode="mini">Mini</button>
         <button id="mobilePreviewBtn" title="Toggle phone-sized mobile preview">Mobile Preview</button>
       </section>
+
+      <nav class="mobile-tabbar" aria-label="Mobile preview navigation">
+        <button data-view="now" class="active"><span>◉</span><em>Now</em></button>
+        <button data-view="library"><span>▤</span><em>Library</em></button>
+        <button data-view="playlists"><span>☷</span><em>Lists</em></button>
+        <button data-view="sources"><span>◎</span><em>Sources</em></button>
+        <button data-view="audio"><span>⌁</span><em>Audio</em></button>
+        <button data-view="settings"><span>⚙</span><em>Settings</em></button>
+      </nav>
 
       <section class="view active" id="view-now">
         <div class="now-grid">
@@ -105,7 +114,10 @@
                 <p class="eyebrow">Active Session</p>
                 <h3>Queue</h3>
               </div>
-              <button class="link-btn" id="clearQueueBtn">Clear</button>
+              <div class="queue-header-actions">
+                <button class="link-btn" id="saveQueueBtn">Save</button>
+                <button class="link-btn" id="clearQueueBtn">Clear</button>
+              </div>
             </div>
             <div class="queue-list" id="queueList"></div>
           </section>
@@ -138,13 +150,28 @@
               <input id="librarySearch" type="search" placeholder="Search tracks, artists, tags..." />
             </div>
           </div>
-          <div class="toolbar-row">
+          <div class="toolbar-row library-tools">
             <button class="btn secondary" id="browserFileBtn">Browser File Import</button>
             <input id="browserFileInput" type="file" multiple accept="audio/*" hidden />
+            <select id="librarySourceFilter" aria-label="Filter by source">
+              <option value="all">All Sources</option>
+              <option value="local">Local</option>
+              <option value="youtube">YouTube</option>
+              <option value="soundcloud">SoundCloud</option>
+              <option value="favorites">Favorites</option>
+            </select>
+            <select id="librarySort" aria-label="Sort library">
+              <option value="recent">Recently Added</option>
+              <option value="title">Title A-Z</option>
+              <option value="artist">Artist A-Z</option>
+              <option value="source">Source</option>
+              <option value="plays">Most Played</option>
+            </select>
             <button class="btn secondary" id="exportLibraryBtn">Export Library</button>
             <button class="btn secondary" id="importLibraryBtn">Import Library JSON</button>
             <input id="importLibraryInput" type="file" accept="application/json" hidden />
           </div>
+          <div class="library-summary" id="librarySummary">Showing your local EchoDeck library.</div>
           <div class="track-table" id="libraryTable"></div>
         </section>
       </section>
@@ -323,6 +350,22 @@
             <p class="muted">Deck mode is saved locally and controls the Now Playing layout. Mobile Preview helps tune the future iOS app shape.</p>
           </section>
 
+          <section class="card mobile-ux-card">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">Mobile UX</p>
+                <h3>Phone Layout Controls</h3>
+              </div>
+            </div>
+            <p>Mobile Preview now uses a bottom tab bar, compact cards, touch-sized controls, and persistent deck settings as the baseline for the future iOS app.</p>
+            <div class="roadmap-pills">
+              <span>Bottom Tabs</span>
+              <span>Touch Controls</span>
+              <span>Persistent State</span>
+              <span>iOS Ready</span>
+            </div>
+          </section>
+
           <section class="card mobile-roadmap-card">
             <div class="section-head">
               <div>
@@ -367,6 +410,7 @@
               <li><kbd>D</kbd><span>Cycle deck mode</span></li>
               <li><kbd>M</kbd><span>Toggle mobile preview</span></li>
               <li><kbd>F</kbd><span>Full screen visualizer</span></li>
+              <li><kbd>Q</kbd><span>Jump to queue / now playing</span></li>
             </ul>
           </section>
         </div>

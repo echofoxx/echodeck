@@ -1,4 +1,4 @@
-# EchoDeck v0.2.5 — Adaptive Panel Fit
+# EchoDeck v0.2.6 — Adaptive Panel Fit
 
 EchoDeck is a local-first desktop music player prototype for **Windows 11 and macOS**. It focuses on local music playback, playlist/queue management, EQ, visualizations, crossfade, modern/vintage themes, and source-aware streaming-source organization through official embed/widget paths.
 
@@ -146,9 +146,9 @@ scripts/package-macos.sh    macOS packaging helper
 
 
 
-## v0.2.5 adaptive panel fit update
+## v0.2.6 adaptive panel fit update
 
-EchoDeck v0.2.5 focuses on preventing overflow in the Now Playing screen. It adds adaptive panel sizing, responsive typography, dynamic title fitting, and stronger clipping rules so metadata no longer bleeds into the Queue panel when the desktop window is narrow or short.
+EchoDeck v0.2.6 focuses on preventing overflow in the Now Playing screen. It adds adaptive panel sizing, responsive typography, dynamic title fitting, and stronger clipping rules so metadata no longer bleeds into the Queue panel when the desktop window is narrow or short.
 
 ## v0.2.1 layout and visualizer update
 
@@ -218,7 +218,7 @@ Mix Name | https://soundcloud.com/artist/track
 Supported now: YouTube video URLs, YouTube Shorts, YouTube Music video URLs, YouTube embed URLs, YouTube playlists, and public SoundCloud URLs.
 
 
-## EchoDeck v0.2.5 — Analog Cream Theme + iOS Roadmap
+## EchoDeck v0.2.6 — Analog Cream Theme + iOS Roadmap
 
 EchoDeck now includes an **Analog Cream** theme inspired by tactile cassette decks, turntables, EQ sliders, VU meters, and warm orange/cream mobile hi-fi interfaces. The theme is responsive and designed to support the future iOS app direction while keeping the Windows/macOS desktop app as the current release target.
 
@@ -230,15 +230,15 @@ Highlights:
 - iOS roadmap card added to Settings
 - New docs for the future Capacitor iOS app path
 
-The iOS app is not packaged in this release. v0.2.5 prepares the shared UI/theme layer so a future Capacitor shell can reuse the EchoDeck player experience.
+The iOS app is not packaged in this release. v0.2.6 prepares the shared UI/theme layer so a future Capacitor shell can reuse the EchoDeck player experience.
 
-## v0.2.5 Mobile Deck Modes
+## v0.2.6 Mobile Deck Modes
 
 EchoDeck now includes selectable deck layouts: Classic, Cassette, Turntable, Equalizer, Visualizer, and Mini Player. Use the Deck Mode strip on Now Playing, or open Settings > Deck Layout. Mobile Preview simulates a phone-sized shell for the future iOS app path.
 
 Shortcuts: `D` cycles deck modes, `M` toggles Mobile Preview, and `F` opens the full-screen visualizer.
 
 
-## v0.2.5 Mobile Preview Fit Fix
+## v0.2.6 Mobile UX + Playback Persistence
 
 This release fixes the mobile preview experience by hiding the desktop sidebar in Mobile Preview, centering the app in a phone-sized canvas, preventing horizontal bleed, and tightening the deck mode strip, Now Playing, Queue, and visualizer sizing for mobile/iOS-style layouts.
