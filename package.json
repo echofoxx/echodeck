@@ -8,6 +8,8 @@
   "private": true,
   "type": "commonjs",
   "scripts": {
+    "test": "npm run verify:version && npm run lint:smoke",
+    "verify:version": "node scripts/verify-version.js",
     "start": "electron .",
     "dev": "electron . --dev",
     "package:mac": "electron-builder --mac dmg zip",

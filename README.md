@@ -99,6 +99,10 @@ release\EchoDeck-0.3.2-Windows-Portable.exe
 
 ## Publish GitHub Release
 
+Normal releases are now built and published by GitHub Actions when a matching `vX.Y.Z` tag is pushed. See [`docs/CI_CD.md`](docs/CI_CD.md) for the validation, release, and rollback process.
+
+For a manual local release:
+
 ```powershell
 git status
 git add .
